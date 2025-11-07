@@ -38,12 +38,11 @@ for lepes in range(iteraciok):
     eltolas -= tanulasi_rata * dH_deltolas
     
     # Kiírás 10 lépésenként
-    if (lepes + 1) % 10 == 0:
+    if lepes < 10 or (lepes + 1) % 10 == 0:
         print("Iteráció:", lepes + 1,
               "Hiba:", round(hiba, 4),
               "Súly:", round(suly, 4),
               "Eltolás:", round(eltolas, 4))
-
 # Eredmény
 print("\nTanulás vége.")
 print("Tanult paraméterek: Súly =", round(suly, 4), ", Eltolás =", round(eltolas, 4))
