@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-roller készletkiegyenlítő</title>
+    <link rel="stylesheet" href="menu.css">
+    
+    <style>
+        /* A fő tartalmat középre igazító konténer */
+        .tartalom-kontener {
+            flex: 1;
+            display: flex;
+            justify-content: center; 
+            align-items: center;      
+            gap: 40px;                
+            flex-wrap: wrap;         
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Bal oldali szövegoszlop stílusa */
+        .bal-oszlop {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+        }
+
+        /* Címsor méretének beállítása */
+        .bal-oszlop h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        /* Jobb oldali képoszlop stílusa */
+        .jobb-oszlop {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+        }
+
+        /* A főoldali e-roller kép formázása */
+        .roller-kep {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px; 
+        }
+
+        /* Linkek egységes megjelenése */
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: white;
+        }
+
+        /* Mobilnézethez: az elemek egymás alá kerülnek */
+        @media (max-width: 768px) {
+            .tartalom-kontener {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Felső menüsáv -->
+    <header class="menu">
+        <div class="menu-bal">
+           
+            <a href="index.html">
+                <b><i>E-roller készletkiegyenlítő</i></b>
+                <span style="font-size: 14px;"><br>Orosz Kristóf – EYZWG9</span>
+            </a>
+        </div>
+
+        
+        <div class="menu-jobb">
+            <a href="utvonaltervezes.html"><button class="menu-gomb"><i>ÚTVONALTERVEZÉS</i></button></a>
+            <a href="rakodasinaplo.html"><button class="menu-gomb"><i>RAKODÁSI NAPLÓ</i></button></a>
+        </div>
+    </header>
+
+    
+    <main class="tartalom-kontener">
+        
+        <section class="bal-oszlop">
+            <h1><b><i>Városi közösségi e-roller készletkiegyenlítő rendszer</i></b></h1>
+        </section>
+
+        
+        <section class="jobb-oszlop">
+            <img src="e-roller.jpg" alt="E-roller" class="roller-kep">
+        </section>
+    </main>
+
+</body>
+</html>

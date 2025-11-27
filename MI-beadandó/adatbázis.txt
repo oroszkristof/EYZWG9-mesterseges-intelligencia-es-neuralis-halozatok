@@ -1,0 +1,31 @@
+CREATE TABLE depok (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nev VARCHAR(100) NOT NULL,
+  x INT NOT NULL,
+  y INT NOT NULL,
+  aktualis INT NOT NULL,
+  cel INT NOT NULL
+);
+
+
+INSERT INTO depok (nev, x, y, aktualis, cel) VALUES
+('Rákóczi út, 3950 Sárospatak', 0, 0, 26, 500),
+('Comenius utca, 3950 Sárospatak', 3, 5, 14, 500),
+('Bartók Béla utca, 3950 Sárospatak', 6, 3, 18, 500),
+('Árpád utca, 3950 Sárospatak', 8, 6, 12, 500),
+('Szent Erzsébet utca, 3950 Sárospatak', 1, 4, 28, 500),
+('Kazinczy Ferenc utca, 3950 Sárospatak', 9, 2, 20, 500),
+('Dózsa György utca, 3950 Sárospatak', 5, 7, 15, 500),
+('Eötvös József utca, 3950 Sárospatak', 4, 2, 19, 500),
+('József Attila utca, 3950 Sárospatak', 2, 8, 10, 500),
+('Hunyadi János utca, 3950 Sárospatak', 7, 9, 22, 500);
+
+
+
+
+CREATE TABLE rakodasinaplo (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  depo_nev VARCHAR(255) NOT NULL,
+  aktualis INT NOT NULL,
+  ido DATETIME NOT NULL
+);

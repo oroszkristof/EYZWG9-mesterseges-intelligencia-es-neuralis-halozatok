@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Útvonaltervezés</title>
+  <link rel="stylesheet" href="menu.css">
+  
+  <style>
+    .urlap-kontener {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #f9fff9;
+      border: 2px solid #90EE90;
+      border-radius: 10px;
+      padding: 25px;
+      color: #006400;
+    }
+
+    fieldset {
+      margin-bottom: 20px;
+      border: 2px solid #90EE90;
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    legend {
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    input, select {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #90EE90;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .kuld-gomb {
+      display: block;
+      width: 100%;
+      background-color: #006400;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .kuld-gomb:hover {
+      background-color: #00a000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Menü -->
+  <header class="menu">
+    <div class="menu-bal">
+      <a href="index.html" style="color:white;text-decoration:none;">
+        <b><i>E-roller készletkiegyenlítő</i><br>
+        <span style="font-size:14px;">Orosz Kristóf - EYZWG9</span></b>
+      </a>
+    </div>
+
+    <div class="menu-jobb">
+      <a href="utvonaltervezes.html"><button class="menu-gomb"><i>ÚTVONALTERVEZÉS</i></button></a>
+      <a href="rakodasinaplo.html"><button class="menu-gomb"><i>RAKODÁSI NAPLÓ</i></button></a>
+    </div>
+  </header>
+
+  <!-- Tartalom -->
+  <main class="urlap-kontener">
+    <h1><i>Útvonaltervezés</i></h1>
+    <p>Kérem, válasszon depót az útvonal megtervezéséhez!</p>
+
+    <fieldset id="depok">
+      <legend>Depók adatai</legend>
+
+      <div class="depo-blokk">
+        <label>Depó neve:</label>
+        <select class="depo-nev" onchange="betoltAdatok(this)">
+          <option value="">-- Válasszon depót --</option>
+        </select>
+
+        <label>X koordináta:</label>
+        <input type="number" class="depo-x" readonly>
+
+        <label>Y koordináta:</label>
+        <input type="number" class="depo-y" readonly>
+
+        <label>Aktuális készlet:</label>
+        <input type="number" class="depo-aktualis" readonly>
+
+        <label>Célkészlet:</label>
+        <input type="number" class="depo-cel" readonly>
+      </div>
+    </fieldset>
+
+    <button class="kuld-gomb" type="button" onclick="ujDepo()">+ Új depó hozzáadása</button>
+    <button class="kuld-gomb" type="button" onclick="adatokatKuldes()">Optimalizálás indítása</button>
+  </main>
+
+  <script>
+    let depoAdatok = [];
+
+    // Depók betöltése az adatbázisból
+    function betoltDepok() {
+      fetch("depok.php")
+        .then(response => response.json())
+        .then(data => {
+          depoAdatok = data;
+          feltoltDepoLista();
+        })
+        .catch(err => console.error("Hiba a depók betöltésekor:", err));
+    }
+
+    // Depók listájának frissítése
+    function feltoltDepoLista() {
+      document.querySelectorAll(".depo-nev").forEach(select => {
+        const elozo = select.value;
+        select.innerHTML = "<option value=''>-- Válasszon depót --</option>";
+
+        depoAdatok.forEach(depo => {
+          const opcio = document.createElement("option");
+          opcio.value = depo.nev;
+          opcio.textContent = depo.nev;
+          if (depo.nev === elozo) opcio.selected = true;
+          select.appendChild(opcio);
+        });
+      });
+    }
+
+    // Új depó blokk hozzáadása
+    function ujDepo() {
+      const szulo = document.getElementById("depok");
+      const uj = document.createElement("div");
+      uj.classList.add("depo-blokk");
+
+      uj.innerHTML = `
+        <label>Depó neve:</label>
+        <select class="depo-nev" onchange="betoltAdatok(this)">
+          <option value="">-- Válasszon depót --</option>
+        </select>
+
+        <label>X koordináta:</label>
+        <input type="number" class="depo-x" readonly>
+
+        <label>Y koordináta:</label>
+        <input type="number" class="depo-y" readonly>
+
+        <label>Aktuális készlet:</label>
+        <input type="number" class="depo-aktualis" readonly>
+
+        <label>Célkészlet:</label>
+        <input type="number" class="depo-cel" readonly>
+      `;
+      szulo.appendChild(uj);
+      feltoltDepoLista();
+    }
+
+    // Kiválasztott depó adatainak betöltése
+    function betoltAdatok(selectElem) {
+      const talalat = depoAdatok.find(d => d.nev === selectElem.value);
+      if (talalat) {
+        const szulo = selectElem.closest(".depo-blokk");
+        szulo.querySelector(".depo-x").value = talalat.x;
+        szulo.querySelector(".depo-y").value = talalat.y;
+        szulo.querySelector(".depo-aktualis").value = talalat.aktualis;
+        szulo.querySelector(".depo-cel").value = talalat.cel;
+      }
+    }
+
+    // Adatok mentése localStorage-ba
+    function adatokatKuldes() {
+      const depok = [];
+
+      document.querySelectorAll(".depo-blokk").forEach(d => {
+        depok.push(d.querySelector(".depo-nev").value);
+      });
+
+      localStorage.setItem("kivalasztottDepok", JSON.stringify(depok));
+      window.location.href = "terkep.html";
+    }
+
+    window.onload = betoltDepok;
+  </script>
+
+</body>
+</html>

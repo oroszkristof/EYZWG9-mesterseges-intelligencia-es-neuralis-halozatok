@@ -1,0 +1,80 @@
+   body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #90EE90; 
+            color: #006400; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+      
+        .menu {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: green;
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-bal {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .menu-gomb {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .menu-gomb:hover {
+            background-color: white;
+            color: #006400;
+        }
+
+       
+        .tartalom-kontener {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .bal-oszlop {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+        }
+
+        .bal-oszlop h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .jobb-oszlop {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+        }
+        @media (max-width: 768px) {
+            .menu {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .menu-jobb {
+                margin-top: 10px;
+            }
+        }

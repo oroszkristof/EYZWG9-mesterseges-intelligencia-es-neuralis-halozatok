@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Térkép</title>
+  <link rel="stylesheet" href="menu.css">
+
+  <style>
+    /* A térképet megjelenítő 20x20-as rács stílusa */
+    .racs-kontener {
+      display: grid;
+      grid-template-columns: repeat(20, 30px);
+      grid-template-rows: repeat(20, 30px);
+      gap: 2px;
+      margin: 40px auto;
+      background-color: #d9fcd9;
+      border: 2px solid #006400;
+      border-radius: 10px;
+      padding: 5px;
+      position: relative;
+      width: fit-content;
+      z-index: 1;
+    }
+
+    /* Egy-egy rácselem (cella) megjelenítése */
+    .cella {
+      width: 30px;
+      height: 30px;
+      background-color: #ffffff;
+      border: 1px solid #c2e5c2;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    /* A depókat jelölő zöld körök formázása */
+    .raktar {
+      background-color: #006400;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      z-index: 2;
+    }
+
+    /* Ha az egér a depó fölé kerül, nagyít és színt vált */
+    .raktar:hover {
+      transform: scale(1.2);
+      background-color: #00a000;
+    }
+
+    /* A kor (tooltip), amely a depó adatait mutatja */
+    .kor {
+      position: absolute;
+      background-color: rgba(0, 100, 0, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      white-space: nowrap;
+      transform: translate(-50%, -120%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* kor megjelenése egér fölé vitelekor */
+    .raktar:hover .kor {
+      opacity: 1;
+    }
+
+    /* Az optimalizálás indítására szolgáló gomb */
+    .optimalizalas-gomb {
+      margin: 15px auto;
+      background-color: #006400;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1em;
+      transition: 0.3s;
+      display: block;
+      width: fit-content;
+    }
+
+    .optimalizalas-gomb:hover {
+      background-color: #00a000;
+    }
+
+    /* Az eredmény megjelenítési doboz */
+    #utvonalEredmeny {
+      margin: 20px auto;
+      background: #f0fff0;
+      border: 2px solid #90EE90;
+      border-radius: 10px;
+      padding: 15px;
+      max-width: 600px;
+      font-weight: bold;
+      color: #004d00;
+      white-space: pre-wrap;
+      display: none;
+    }
+
+    /* Mobilbarát megjelenés */
+    @media (max-width: 768px) {
+      .racs-kontener {
+        grid-template-columns: repeat(10, 25px);
+        grid-template-rows: repeat(10, 25px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Felső menüsáv az oldal navigációjához -->
+  <header class="menu">
+    <div class="menu-bal">
+      <a href="index.html" style="text-decoration: none; color: white;">
+        <b><i>E-roller készletkiegyenlítő</i><br>
+          <span style="font-size:12px;">Orosz Kristóf - EYZWG9</span></b>
+      </a>
+    </div>
+    <div class="menu-jobb">
+      <a href="utvonaltervezes.html"><button class="menu-gomb"><i>ÚTVONALTERVEZÉS</i></button></a>
+      <a href="rakodasinaplo.html"><button class="menu-gomb"><i>RAKODÁSI NAPLÓ</i></button></a>
+    </div>
+  </header>
+
+  <!-- A rácsos térkép megjelenítése -->
+  <div id="racs" class="racs-kontener"></div>
+
+  <!-- Az optimalizálás indítása gomb -->
+  <button class="optimalizalas-gomb">Optimalizálás indítása</button>
+
+  <!-- Az útvonal optimalizálás eredményének megjelenítése -->
+  <div id="utvonalEredmeny"></div>
+
+  <script>
+    // A kiválasztott depókat a localStorage-ból olvassa be
+    const kivalasztottRaktarak = JSON.parse(localStorage.getItem("kivalasztottDepok") || "[]");
+
+    // Ha nincs depó kiválasztva, visszairányít az útvonaltervezéshez
+    if (kivalasztottRaktarak.length === 0) {
+      alert("Nincsenek kiválasztott depók. Kérlek, térj vissza az útvonaltervezéshez!");
+      window.location.href = "utvonaltervezes.html";
+    }
+
+    // A depók adatainak betöltése a PHP fájlból
+    fetch("depok.php")
+      .then(valasz => valasz.json())
+      .then(adatok => {
+        const racs = document.getElementById("racs");
+
+        // 20x20-as rács létrehozása
+        for (let i = 0; i < 400; i++) {
+          const cella = document.createElement("div");
+          cella.classList.add("cella");
+          racs.appendChild(cella);
+        }
+
+        // Kiválasztott raktárak megjelenítése a rácson
+        adatok.forEach(raktar => {
+          if (kivalasztottRaktarak.includes(raktar.nev)) {
+            const x = parseInt(raktar.x);
+            const y = parseInt(raktar.y);
+            const index = y * 20 + x;
+            const cella = racs.children[index];
+            if (cella) {
+              const raktarElem = document.createElement("div");
+              raktarElem.classList.add("raktar");
+              const kor = document.createElement("div");
+              kor.classList.add("kor");
+              kor.textContent = `${raktar.nev}\nKészlet: ${raktar.aktualis}/${raktar.cel}`;
+              raktarElem.appendChild(kor);
+              cella.appendChild(raktarElem);
+            }
+          }
+        });
+      });
+  </script>
+
+<script>
+  // Itt számítom ki a depók közötti euklideszi távolságot.
+
+  function tavolsag(a, b) {
+    return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+  }
+
+  // Ezzel a függvénnyel kiszámítom egy adott útvonal teljes hosszát.
+ 
+  function utHossz(ut, raktarak) {
+    let osszesHossz = 0;
+    for (let i = 0; i < ut.length - 1; i++) {
+      const a = raktarak.find(d => d.nev === ut[i]);
+      const b = raktarak.find(d => d.nev === ut[i + 1]);
+      osszesHossz += tavolsag(a, b);
+    }
+    const start = raktarak.find(d => d.nev === ut[0]);
+    const vege = raktarak.find(d => d.nev === ut[ut.length - 1]);
+    osszesHossz += tavolsag(vege, start);
+    return osszesHossz;
+  }
+
+  // Ezzel a függvénnyel hozom létre az első populációt, amely véletlenszerű útvonalakat tartalmaz.
+  function letrehozPopulacio(raktarak, meret) {
+    const populacio = [];
+    for (let i = 0; i < meret; i++) {
+      const egyed = [...raktarak.map(d => d.nev)];
+      // A depók sorrendjét véletlenszerűen megkeverem (Fisher–Yates algoritmus)
+      for (let j = egyed.length - 1; j > 0; j--) {
+        const rand = Math.floor(Math.random() * (j + 1));
+        [egyed[j], egyed[rand]] = [egyed[rand], egyed[j]];
+      }
+      populacio.push(egyed);
+    }
+    return populacio;
+  }
+
+  // Ezzel a függvénnyel rendelem a populációt az útvonalhossz szerint.
+  function rendezPopulacio(populacio, raktarak) {
+    return populacio.sort((a, b) => utHossz(a, raktarak) - utHossz(b, raktarak));
+  }
+
+  // A keresztezés során két szülő útvonalból hozok létre egy új "gyermek" útvonalat.
+  function keresztez(sz1, sz2) {
+    const start = Math.floor(Math.random() * sz1.length);
+    const end = start + Math.floor(Math.random() * (sz1.length - start));
+    const resz = sz1.slice(start, end);
+    const gyerek = sz2.filter(g => !resz.includes(g));
+    return [...resz, ...gyerek];
+  }
+
+  // A mutációt arra használom, hogy a genetikus keresés ne ragadjon be egy helyi minimumba.
+  function mutacio(egyed, valoszinuseg) {
+    const ut = [...egyed];
+    if (Math.random() < valoszinuseg) {
+      const i = Math.floor(Math.random() * ut.length);
+      const j = Math.floor(Math.random() * ut.length);
+      [ut[i], ut[j]] = [ut[j], ut[i]];
+    }
+    return ut;
+  }
+
+  // Ez a genetikus algoritmus fő függvénye, amely végrehajtja a teljes evolúciós folyamatot.
+  function genetikusAlgoritmus(raktarak, generaciok = 200, populacioMeret = 60) {
+    // Létrehozom a kezdeti populációt
+    let populacio = letrehozPopulacio(raktarak, populacioMeret);
+
+    // Itt zajlik az evolúciós ciklus – 200 generáción keresztül javítom a megoldásokat
+    for (let gen = 0; gen < generaciok; gen++) {
+      // A legjobb útvonalakat előresorolom
+      populacio = rendezPopulacio(populacio, raktarak);
+      const ujPop = [];
+
+      // A két legjobb útvonalat közvetlenül továbbviszem (elitizmus)
+      ujPop.push(populacio[0], populacio[1]);
+
+      // A többi helyet keresztezéssel és mutációval töltöm fel
+      while (ujPop.length < populacioMeret) {
+        const sz1 = populacio[Math.floor(Math.random() * (populacioMeret / 2))];
+        const sz2 = populacio[Math.floor(Math.random() * (populacioMeret / 2))];
+        let gyerek = keresztez(sz1, sz2);
+        gyerek = mutacio(gyerek, 0.2); // 20%-os mutációs eséllyel dolgozom
+        ujPop.push(gyerek);
+      }
+
+      // A generáció végén az új populáció lesz az aktuális
+      populacio = ujPop;
+    }
+
+    // Kiválasztom a legjobb (legrövidebb) útvonalat
+    const legjobb = rendezPopulacio(populacio, raktarak)[0];
+    const tav = utHossz(legjobb, raktarak).toFixed(2);
+
+    // A legjobb útvonalat és annak hosszát visszaadom
+    return { legjobb, tav };
+  }
+    // A legjobb útvonal kirajzolása vonalakkal
+    function utvonalRajzolas(legjobbUtvonal, raktarak) {
+      const racs = document.getElementById("racs");
+      let svg = document.getElementById("utvonal-svg");
+      if (!svg) {
+        svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("id", "utvonal-svg");
+        svg.style.position = "absolute";
+        svg.style.top = racs.offsetTop + "px";
+        svg.style.left = racs.offsetLeft + "px";
+        svg.style.width = racs.offsetWidth + "px";
+        svg.style.height = racs.offsetHeight + "px";
+        svg.style.pointerEvents = "none";
+        document.body.appendChild(svg);
+      }
+
+      const pontok = legjobbUtvonal.map(n => raktarak.find(d => d.nev === n));
+      const cellaMeret = 32;
+      const offsetX = racs.offsetLeft + 15;
+      const offsetY = racs.offsetTop + 15;
+
+      pontok.forEach((p, i) => {
+        if (i < pontok.length - 1) {
+          const a = pontok[i];
+          const b = pontok[i + 1];
+          const x1 = a.x * cellaMeret + offsetX;
+          const y1 = a.y * cellaMeret + offsetY;
+          const x2 = b.x * cellaMeret + offsetX;
+          const y2 = b.y * cellaMeret + offsetY;
+
+          const vonal = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          vonal.setAttribute("x1", x1);
+          vonal.setAttribute("y1", y1);
+          vonal.setAttribute("x2", x2);
+          vonal.setAttribute("y2", y2);
+          vonal.setAttribute("stroke", "#008000");
+          vonal.setAttribute("stroke-width", "3");
+          vonal.style.opacity = 0;
+          svg.appendChild(vonal);
+          setTimeout(() => {
+            vonal.style.transition = "opacity 0.5s ease";
+            vonal.style.opacity = 1;
+          }, i * 400);
+        }
+      });
+    }
+
+    // A "Optimalizálás indítása" gomb eseménykezelője
+    document.querySelector(".optimalizalas-gomb").addEventListener("click", () => {
+      fetch("depok.php")
+        .then(res => res.json())
+        .then(adatok => {
+          const kivalasztottRaktarak = JSON.parse(localStorage.getItem("kivalasztottDepok") || "[]");
+          const aktivRaktarak = adatok.filter(d => kivalasztottRaktarak.includes(d.nev));
+          const { legjobb, tav } = genetikusAlgoritmus(aktivRaktarak, 200);
+
+          // Frissíti a készletet: a célkészlet felé mozdítja az értékeket
+          const frissitesek = aktivRaktarak.map(d => {
+            const kulonbseg = (d.cel - d.aktualis);
+            const uj_aktualis = d.aktualis + Math.round(kulonbseg * 0.5);
+            return { nev: d.nev, uj_aktualis };
+          });
+
+          // Frissítések küldése a PHP felé
+          fetch("keszletfrissites.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ frissitesek })
+          });
+
+          // Kiírja a legjobb útvonalat és a távolságot
+          const eredmenyDiv = document.getElementById("utvonalEredmeny");
+          eredmenyDiv.style.display = "block";
+          eredmenyDiv.innerHTML = `<b>Legjobb útvonal:</b><br>${legjobb.join(" → ")}<br><br><b>Teljes távolság:</b> ${tav} egység`;
+
+          utvonalRajzolas(legjobb, aktivRaktarak);
+        });
+    });
+  </script>
+</body>
+</html>
