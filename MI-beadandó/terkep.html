@@ -188,102 +188,105 @@
   </script>
 
 <script>
-  // Itt számítom ki a depók közötti euklideszi távolságot.
+// Euklideszi távolság kiszámítása két pont között
+function tavolsag(a, b) {
+  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+}
 
-  function tavolsag(a, b) {
-    return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+// Egy útvonal teljes hossza
+function utHossz(ut, raktarak) {
+  let hossz = 0;
+  for (let i = 0; i < ut.length - 1; i++) {
+    const a = raktarak.find(d => d.nev === ut[i]);
+    const b = raktarak.find(d => d.nev === ut[i + 1]);
+    hossz += tavolsag(a, b);
   }
+  // Visszatérés az induló raktárba
+  const elso = raktarak.find(d => d.nev === ut[0]);
+  const utolso = raktarak.find(d => d.nev === ut[ut.length - 1]);
+  hossz += tavolsag(utolso, elso);
+  return hossz;
+}
 
-  // Ezzel a függvénnyel kiszámítom egy adott útvonal teljes hosszát.
- 
-  function utHossz(ut, raktarak) {
-    let osszesHossz = 0;
-    for (let i = 0; i < ut.length - 1; i++) {
-      const a = raktarak.find(d => d.nev === ut[i]);
-      const b = raktarak.find(d => d.nev === ut[i + 1]);
-      osszesHossz += tavolsag(a, b);
+// Populáció létrehozása (véletlen permutációk)
+function letrehozPopulacio(raktarak, meret) {
+  const populacio = [];
+  const nevek = raktarak.map(r => r.nev);
+
+  for (let i = 0; i < meret; i++) {
+    const egyed = [...nevek];
+
+    // Fisher–Yates keverés
+    for (let j = egyed.length - 1; j > 0; j--) {
+      const rand = Math.floor(Math.random() * (j + 1));
+      [egyed[j], egyed[rand]] = [egyed[rand], egyed[j]];
     }
-    const start = raktarak.find(d => d.nev === ut[0]);
-    const vege = raktarak.find(d => d.nev === ut[ut.length - 1]);
-    osszesHossz += tavolsag(vege, start);
-    return osszesHossz;
+    populacio.push(egyed);
   }
+  return populacio;
+}
 
-  // Ezzel a függvénnyel hozom létre az első populációt, amely véletlenszerű útvonalakat tartalmaz.
-  function letrehozPopulacio(raktarak, meret) {
-    const populacio = [];
-    for (let i = 0; i < meret; i++) {
-      const egyed = [...raktarak.map(d => d.nev)];
-      // A depók sorrendjét véletlenszerűen megkeverem (Fisher–Yates algoritmus)
-      for (let j = egyed.length - 1; j > 0; j--) {
-        const rand = Math.floor(Math.random() * (j + 1));
-        [egyed[j], egyed[rand]] = [egyed[rand], egyed[j]];
-      }
-      populacio.push(egyed);
-    }
-    return populacio;
+// Populáció rendezése útvonalhossz alapján
+function rendez(pop, raktarak) {
+  return pop.sort((a, b) => utHossz(a, raktarak) - utHossz(b, raktarak));
+}
+
+// Keresztezés
+function keresztez(sz1, sz2) {
+  const start = Math.floor(Math.random() * sz1.length);
+  const end = Math.floor(Math.random() * sz1.length);
+
+  const [min, max] = [Math.min(start, end), Math.max(start, end)];
+
+  const resz = sz1.slice(min, max);
+  const gyerek = sz2.filter(g => !resz.includes(g));
+  return [...resz, ...gyerek];
+}
+
+// Mutáció (két elem felcserélése)
+function mutacio(egyed, p) {
+  const uj = [...egyed];
+  if (Math.random() < p) {
+    const i = Math.floor(Math.random() * uj.length);
+    const j = Math.floor(Math.random() * uj.length);
+    [uj[i], uj[j]] = [uj[j], uj[i]];
   }
+  return uj;
+}
 
-  // Ezzel a függvénnyel rendelem a populációt az útvonalhossz szerint.
-  function rendezPopulacio(populacio, raktarak) {
-    return populacio.sort((a, b) => utHossz(a, raktarak) - utHossz(b, raktarak));
-  }
+// Genetikus algoritmus
+function genetikusAlgoritmus(raktarak, generaciok = 200, popMeret = 60) {
 
-  // A keresztezés során két szülő útvonalból hozok létre egy új "gyermek" útvonalat.
-  function keresztez(sz1, sz2) {
-    const start = Math.floor(Math.random() * sz1.length);
-    const end = start + Math.floor(Math.random() * (sz1.length - start));
-    const resz = sz1.slice(start, end);
-    const gyerek = sz2.filter(g => !resz.includes(g));
-    return [...resz, ...gyerek];
-  }
+  let populacio = letrehozPopulacio(raktarak, popMeret);
 
-  // A mutációt arra használom, hogy a genetikus keresés ne ragadjon be egy helyi minimumba.
-  function mutacio(egyed, valoszinuseg) {
-    const ut = [...egyed];
-    if (Math.random() < valoszinuseg) {
-      const i = Math.floor(Math.random() * ut.length);
-      const j = Math.floor(Math.random() * ut.length);
-      [ut[i], ut[j]] = [ut[j], ut[i]];
-    }
-    return ut;
-  }
+  for (let gen = 0; gen < generaciok; gen++) {
 
-  // Ez a genetikus algoritmus fő függvénye, amely végrehajtja a teljes evolúciós folyamatot.
-  function genetikusAlgoritmus(raktarak, generaciok = 200, populacioMeret = 60) {
-    // Létrehozom a kezdeti populációt
-    let populacio = letrehozPopulacio(raktarak, populacioMeret);
+    // Szelekció: a populáció rendezése
+    populacio = rendez(populacio, raktarak);
 
-    // Itt zajlik az evolúciós ciklus – 200 generáción keresztül javítom a megoldásokat
-    for (let gen = 0; gen < generaciok; gen++) {
-      // A legjobb útvonalakat előresorolom
-      populacio = rendezPopulacio(populacio, raktarak);
-      const ujPop = [];
+    const uj = [];
 
-      // A két legjobb útvonalat közvetlenül továbbviszem (elitizmus)
-      ujPop.push(populacio[0], populacio[1]);
+    // Populáció feltöltése keresztezéssel és mutációval
+    while (uj.length < popMeret) {
+      const sz1 = populacio[Math.floor(Math.random() * (popMeret / 2))];
+      const sz2 = populacio[Math.floor(Math.random() * (popMeret / 2))];
 
-      // A többi helyet keresztezéssel és mutációval töltöm fel
-      while (ujPop.length < populacioMeret) {
-        const sz1 = populacio[Math.floor(Math.random() * (populacioMeret / 2))];
-        const sz2 = populacio[Math.floor(Math.random() * (populacioMeret / 2))];
-        let gyerek = keresztez(sz1, sz2);
-        gyerek = mutacio(gyerek, 0.2); // 20%-os mutációs eséllyel dolgozom
-        ujPop.push(gyerek);
-      }
+      let gy = keresztez(sz1, sz2);
+      gy = mutacio(gy, 0.2);
 
-      // A generáció végén az új populáció lesz az aktuális
-      populacio = ujPop;
+      uj.push(gy);
     }
 
-    // Kiválasztom a legjobb (legrövidebb) útvonalat
-    const legjobb = rendezPopulacio(populacio, raktarak)[0];
-    const tav = utHossz(legjobb, raktarak).toFixed(2);
-
-    // A legjobb útvonalat és annak hosszát visszaadom
-    return { legjobb, tav };
+    populacio = uj;
   }
-   
+
+  // Legjobb megoldás kiválasztása
+  const legjobb = rendez(populacio, raktarak)[0];
+  const tav = utHossz(legjobb, raktarak).toFixed(2);
+
+  return { legjobb, tav };
+}
+
     // A "Optimalizálás indítása" gomb eseménykezelője
     document.querySelector(".optimalizalas-gomb").addEventListener("click", () => {
       fetch("depok.php")
