@@ -293,20 +293,6 @@
           const aktivRaktarak = adatok.filter(d => kivalasztottRaktarak.includes(d.nev));
           const { legjobb, tav } = genetikusAlgoritmus(aktivRaktarak, 200);
 
-          // Frissíti a készletet: a célkészlet felé mozdítja az értékeket
-          const frissitesek = aktivRaktarak.map(d => {
-            const kulonbseg = (d.cel - d.aktualis);
-            const uj_aktualis = d.aktualis + Math.round(kulonbseg * 0.5);
-            return { nev: d.nev, uj_aktualis };
-          });
-
-          // Frissítések küldése a PHP felé
-          fetch("keszletfrissites.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ frissitesek })
-          });
-
           // Kiírja a legjobb útvonalat és a távolságot
           const eredmenyDiv = document.getElementById("utvonalEredmeny");
           eredmenyDiv.style.display = "block";
