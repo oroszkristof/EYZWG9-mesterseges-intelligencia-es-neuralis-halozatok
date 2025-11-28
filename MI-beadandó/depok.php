@@ -23,6 +23,5 @@ if ($result && $result->num_rows > 0) {
     echo json_encode(["error" => "Nem található adat a depok táblában."]);
 }
 
-// A kapcsolatot lezárom, hogy ne foglalja tovább az erőforrásokat.
 $conn->close();
 ?>

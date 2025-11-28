@@ -54,7 +54,7 @@
       background-color: #00a000;
     }
 
-    /* A kor (tooltip), amely a depó adatait mutatja */
+    /* A kor, amely a depó adatait mutatja */
     .kor {
       position: absolute;
       background-color: rgba(0, 100, 0, 0.9);
@@ -283,53 +283,7 @@
     // A legjobb útvonalat és annak hosszát visszaadom
     return { legjobb, tav };
   }
-    // A legjobb útvonal kirajzolása vonalakkal
-    function utvonalRajzolas(legjobbUtvonal, raktarak) {
-      const racs = document.getElementById("racs");
-      let svg = document.getElementById("utvonal-svg");
-      if (!svg) {
-        svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("id", "utvonal-svg");
-        svg.style.position = "absolute";
-        svg.style.top = racs.offsetTop + "px";
-        svg.style.left = racs.offsetLeft + "px";
-        svg.style.width = racs.offsetWidth + "px";
-        svg.style.height = racs.offsetHeight + "px";
-        svg.style.pointerEvents = "none";
-        document.body.appendChild(svg);
-      }
-
-      const pontok = legjobbUtvonal.map(n => raktarak.find(d => d.nev === n));
-      const cellaMeret = 32;
-      const offsetX = racs.offsetLeft + 15;
-      const offsetY = racs.offsetTop + 15;
-
-      pontok.forEach((p, i) => {
-        if (i < pontok.length - 1) {
-          const a = pontok[i];
-          const b = pontok[i + 1];
-          const x1 = a.x * cellaMeret + offsetX;
-          const y1 = a.y * cellaMeret + offsetY;
-          const x2 = b.x * cellaMeret + offsetX;
-          const y2 = b.y * cellaMeret + offsetY;
-
-          const vonal = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          vonal.setAttribute("x1", x1);
-          vonal.setAttribute("y1", y1);
-          vonal.setAttribute("x2", x2);
-          vonal.setAttribute("y2", y2);
-          vonal.setAttribute("stroke", "#008000");
-          vonal.setAttribute("stroke-width", "3");
-          vonal.style.opacity = 0;
-          svg.appendChild(vonal);
-          setTimeout(() => {
-            vonal.style.transition = "opacity 0.5s ease";
-            vonal.style.opacity = 1;
-          }, i * 400);
-        }
-      });
-    }
-
+   
     // A "Optimalizálás indítása" gomb eseménykezelője
     document.querySelector(".optimalizalas-gomb").addEventListener("click", () => {
       fetch("depok.php")

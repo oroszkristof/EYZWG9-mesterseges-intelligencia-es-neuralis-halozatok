@@ -4,10 +4,9 @@ header('Content-Type: application/json; charset=utf-8');
 // Betöltöm az adatbázis kapcsolatot tartalmazó fájlt.
 require_once 'kapcsolat.php';
 
-// Lekérem a HTTP metódust (GET vagy POST), hogy tudjam, milyen műveletet kell végrehajtani.
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Ha GET metódussal érkezik a kérés, akkor lekérem a depók listáját az adatbázisból.
+// GET metódussal érkezik a kérés, akkor lekérem a depók listáját az adatbázisból.
 if ($method === 'GET') {
     // A depók nevét és azonosítóját kérem le, hogy a lenyíló lista feltölthető legyen.
     $sql = "SELECT id, nev FROM depok";
