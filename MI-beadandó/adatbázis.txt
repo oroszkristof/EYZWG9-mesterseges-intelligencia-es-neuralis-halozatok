@@ -7,20 +7,37 @@ CREATE TABLE depok (
   cel INT NOT NULL
 );
 
-
 INSERT INTO depok (nev, x, y, aktualis, cel) VALUES
-('Rákóczi út, 3950 Sárospatak', 0, 0, 26, 500),
-('Comenius utca, 3950 Sárospatak', 3, 5, 14, 500),
-('Bartók Béla utca, 3950 Sárospatak', 6, 3, 18, 500),
-('Árpád utca, 3950 Sárospatak', 8, 6, 12, 500),
-('Szent Erzsébet utca, 3950 Sárospatak', 1, 4, 28, 500),
-('Kazinczy Ferenc utca, 3950 Sárospatak', 9, 2, 20, 500),
-('Dózsa György utca, 3950 Sárospatak', 5, 7, 15, 500),
-('Eötvös József utca, 3950 Sárospatak', 4, 2, 19, 500),
-('József Attila utca, 3950 Sárospatak', 2, 8, 10, 500),
-('Hunyadi János utca, 3950 Sárospatak', 7, 9, 22, 500);
-
-
+('Rákóczi út, 3950 Sárospatak', 0, 0, 0, 12),
+('Comenius utca, 3950 Sárospatak', 1, 2, 0, 27),
+('Bartók Béla utca, 3950 Sárospatak', 2, 1, 0, 33),
+('Árpád utca, 3950 Sárospatak', 3, 4, 0, 44),
+('Szent Erzsébet utca, 3950 Sárospatak', 4, 3, 0, 58),
+('Kazinczy Ferenc utca, 3950 Sárospatak', 5, 1, 0, 63),
+('Dózsa György utca, 3950 Sárospatak', 6, 5, 0, 71),
+('Eötvös József utca, 3950 Sárospatak', 7, 2, 0, 85),
+('József Attila utca, 3950 Sárospatak', 8, 6, 0, 90),
+('Hunyadi János utca, 3950 Sárospatak', 9, 7, 0, 99),
+('Váradi utca, 3950 Sárospatak', 10, 8, 0, 103),
+('Jókai Mór utca, 3950 Sárospatak', 11, 9, 0, 117),
+('Ady Endre utca, 3950 Sárospatak', 12, 10, 0, 120),
+('Kiss Ernő utca, 3950 Sárospatak', 13, 11, 0, 134),
+('Dobó István utca, 3950 Sárospatak', 14, 12, 0, 146),
+('Petőfi utca, 3950 Sárospatak', 15, 13, 0, 150),
+('Esze Tamás utca, 3950 Sárospatak', 14, 14, 0, 159),
+('Táncsics Mihály utca, 3950 Sárospatak', 13, 15, 0, 166),
+('Rózsa utca, 3950 Sárospatak', 12, 13, 0, 172),
+('Kossuth Lajos utca, 3950 Sárospatak', 11, 12, 0, 180),
+('Csokonai utca, 3950 Sárospatak', 10, 11, 0, 183),
+('Tinódi utca, 3950 Sárospatak', 9, 10, 0, 187),
+('Bessenyei utca, 3950 Sárospatak', 8, 9, 0, 192),
+('Thököly utca, 3950 Sárospatak', 7, 8, 0, 195),
+('Vajda János utca, 3950 Sárospatak', 6, 7, 0, 199),
+('Lorántffy Zsuzsanna utca, 3950 Sárospatak', 5, 6, 0, 141),
+('Wesselényi utca, 3950 Sárospatak', 4, 7, 0, 54),
+('Szent Margit utca, 3950 Sárospatak', 3, 8, 0, 76),
+('Sziget utca, 3950 Sárospatak', 2, 9, 0, 109),
+('Iskola utca, 3950 Sárospatak', 1, 10, 0, 14);
 
 
 CREATE TABLE rakodasinaplo (

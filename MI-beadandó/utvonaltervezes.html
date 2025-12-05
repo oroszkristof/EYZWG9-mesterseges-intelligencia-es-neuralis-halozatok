@@ -65,7 +65,7 @@
 </head>
 <body>
 
-  <!-- Menü -->
+
   <header class="menu">
     <div class="menu-bal">
       <a href="index.html" style="color:white;text-decoration:none;">
@@ -80,7 +80,7 @@
     </div>
   </header>
 
-  <!-- Tartalom -->
+  
   <main class="urlap-kontener">
     <h1><i>Útvonaltervezés</i></h1>
     <p>Kérem, válasszon depót az útvonal megtervezéséhez!</p>
@@ -115,7 +115,7 @@
   <script>
     let depoAdatok = [];
 
-    // Depók betöltése az adatbázisból
+    
     function betoltDepok() {
       fetch("depok.php")
         .then(response => response.json())
@@ -126,7 +126,7 @@
         .catch(err => console.error("Hiba a depók betöltésekor:", err));
     }
 
-    // Depók listájának frissítése
+  
     function feltoltDepoLista() {
       document.querySelectorAll(".depo-nev").forEach(select => {
         const elozo = select.value;
@@ -142,7 +142,7 @@
       });
     }
 
-    // Új depó blokk hozzáadása
+
     function ujDepo() {
       const szulo = document.getElementById("depok");
       const uj = document.createElement("div");
@@ -170,7 +170,7 @@
       feltoltDepoLista();
     }
 
-    // Kiválasztott depó adatainak betöltése
+    
     function betoltAdatok(selectElem) {
       const talalat = depoAdatok.find(d => d.nev === selectElem.value);
       if (talalat) {
@@ -182,7 +182,7 @@
       }
     }
 
-    // Adatok mentése localStorage-ba
+ 
     function adatokatKuldes() {
       const depok = [];
 
