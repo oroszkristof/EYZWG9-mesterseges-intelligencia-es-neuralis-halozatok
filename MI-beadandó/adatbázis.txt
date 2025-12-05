@@ -39,10 +39,3 @@ INSERT INTO depok (nev, x, y, aktualis, cel) VALUES
 ('Sziget utca, 3950 Sárospatak', 2, 9, 0, 109),
 ('Iskola utca, 3950 Sárospatak', 1, 10, 0, 14);
 
-
-CREATE TABLE rakodasinaplo (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  depo_nev VARCHAR(255) NOT NULL,
-  aktualis INT NOT NULL,
-  ido DATETIME NOT NULL
-);
